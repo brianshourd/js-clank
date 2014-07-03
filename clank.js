@@ -1,7 +1,3 @@
-var _ = require('./lodash.js');
-_.str = require('./underscore.string.js');
-var fs = require('fs');
-
 // Use UMD, so it should work with Node, AMD, or browser globals. See
 // https://github.com/umdjs/umd, the returnExports.js
 (function (root, factory) {
@@ -13,7 +9,31 @@ var fs = require('fs');
         root.returnExports = factory(root._);
     }
 }(this, function (_) {
-  function Clank(hashFunc) {
+  function Clank(order, hashFunc) {
+    hashFunc = hashFunc | function(x) { return x.toString(); };
+    var orderFunc = _.identity;
+    var unorderFunc = _.identity;
+    if (order != null && order > 1) {
+      orderFunc = function(order1Chain) {
+        if (order1Chain.length < order) {
+          var firstN = order1Chain.slice(0, order);
+        } else {
+          return [];
+        }
+        return _.reduce(order1Chain.slice(order), function(memo, elt) {
+          var next = _.tail(memo.lastN);
+          next.push(elt);
+          memo.orderNChain.push(next);
+          memo.lastN = next;
+        }, { lastN: firstN, orderNChain: [firstN]}).orderNChain;
+      };
+      unorderFunc = function(orderNChain) {
+        return _.map(orderNChain, function(elt) {
+          return _.first(elt);
+        }).concat(_.tail(_.last(orderNChain)));
+      };
+    }
+
     function Node(state) {
       this.state = state;
       this.edges = [];
@@ -59,9 +79,9 @@ var fs = require('fs');
           next = -1;
         }
       }
-      return _.map(_.tail(chain), function(index) {
+      return unorderFunc(_.map(_.tail(chain), function(index) {
         return nodes[index].state;
-      });
+      }));
     }
 
     function HashTable() {
@@ -86,6 +106,8 @@ var fs = require('fs');
     var hashes = new HashTable();
 
     function readChain(chain) {
+      chain = orderFunc(chain);
+      console.log(chain);
       chain = _.map(chain, function(state) {
         var index = hashes.get(state);
         var node;
