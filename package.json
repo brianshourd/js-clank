@@ -1,0 +1,20 @@
+{
+    "name": "clank",
+    "version": "0.1.0",
+    "description": "A fully-generic Markov chain generator for use with node or on the web",
+    "keywords": ["markov", "chain"],
+    "homepage": "http://github.com/brianshourd/js-clank",
+    "bugs": { "url" : "http://github.com/brianshourd/js-clank/issues"
+        , "email" : "brian.shourd@gmail.com"
+    },
+    "license": "MIT",
+    "author": "Brian Shourd <brian.shourd@gmail.com> (http://brianshourd.com)",
+    "files": ["clank.js"],
+    "main": "clank",
+    "repository" : { "type" : "git"
+        , "url" : "http://github.com/brianshourd/js-clank.git"
+    },
+    "dependencies" : {
+      "lodash" : ""
+    }
+}
