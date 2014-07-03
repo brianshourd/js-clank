@@ -20,8 +20,7 @@ var fs = require('fs');
       this.total = 0;
     }
 
-    function Edge(head, tail, weight) {
-      this.head = head;
+    function Edge(tail, weight) {
       this.tail = tail;
       this.weight = weight;
     }
@@ -110,7 +109,7 @@ var fs = require('fs');
           }
         }
         if (!found) {
-          node.edges.push(new Edge(i, j, 1));
+          node.edges.push(new Edge(j, 1));
         }
         node.total += 1;
         return j;
