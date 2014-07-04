@@ -10,22 +10,23 @@
     }
 }(this, function (_) {
   function Clank(order, hashFunc) {
-    hashFunc = hashFunc | function(x) { return x.toString(); };
+    hashFunc = hashFunc || function(x) { return x.toString(); };
     var orderFunc = _.identity;
     var unorderFunc = _.identity;
     if (order != null && order > 1) {
       orderFunc = function(order1Chain) {
         if (order1Chain.length < order) {
-          var firstN = order1Chain.slice(0, order);
-        } else {
           return [];
+        } else {
+          var firstN = order1Chain.slice(0, order);
+          return _.reduce(order1Chain.slice(order), function(memo, elt) {
+            var next = _.tail(memo.lastN);
+            next.push(elt);
+            memo.orderNChain.push(next);
+            memo.lastN = next;
+            return memo;
+          }, { lastN: firstN, orderNChain: [firstN]}).orderNChain;
         }
-        return _.reduce(order1Chain.slice(order), function(memo, elt) {
-          var next = _.tail(memo.lastN);
-          next.push(elt);
-          memo.orderNChain.push(next);
-          memo.lastN = next;
-        }, { lastN: firstN, orderNChain: [firstN]}).orderNChain;
       };
       unorderFunc = function(orderNChain) {
         return _.map(orderNChain, function(elt) {
@@ -107,7 +108,6 @@
 
     function readChain(chain) {
       chain = orderFunc(chain);
-      console.log(chain);
       chain = _.map(chain, function(state) {
         var index = hashes.get(state);
         var node;
@@ -136,7 +136,6 @@
         node.total += 1;
         return j;
       }, 0);
-      //console.log(nodes[0]);
     }
 
     this.createChain = createChain;
